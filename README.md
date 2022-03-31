@@ -12,7 +12,7 @@ Professor Muhammad Muddassir Malik
 ##### Geojson:
 - nasageo.json[^4]
 
-[^1]: The data is contributed by Anandhu H (https://www.kaggle.com/anandhuh)[^2][^3]
+[^1]: The data is contributed by Anandhu H: https://www.kaggle.com/anandhuh
 [^2]: https://www.kaggle.com/datasets/anandhuh/covid-weekly-trends-south-america
 [^3]: https://www.kaggle.com/datasets/anandhuh/covid-weekly-trends-in-north-america
 [^4]: geojson data from http://nasa.gov

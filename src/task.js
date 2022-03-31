@@ -8,13 +8,14 @@ const proj_scale = 140; //scale of projection
 const svg = d3.select('#Task').append('svg')
     .attr('width', width)
     .attr('height', height)
-const g = svg.append('g');
+    .attr('id', 'tasksvg')
+const chorog = svg.append('g').attr('id', 'chorog');
 const proj = d3.geoMercator().scale(proj_scale);
 const path = d3.geoPath(proj);
 
 d3.json(geodatapath)
     .then(data => {
-        g.selectAll('path')
+       chorog.selectAll('path')
             .data(data.features)
             .enter()
             .append('path')
@@ -22,4 +23,4 @@ d3.json(geodatapath)
             .attr('d', path)
     })
 
-g.attr('transform', 'translate(0, 200)')
+chorog.attr('transform', 'translate(0, 200)')
