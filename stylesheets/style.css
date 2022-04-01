@@ -23,9 +23,6 @@ svg{
     background-color: lightblue;
 }
 
-.country{
-    fill: purple;
-}
 
 #tasksvg{
     border: 3px dashed black;
@@ -51,4 +48,10 @@ svg{
     margin-bottom: 50px;
     padding-left: 4px;
     float:left;
+}
+
+#casebox{
+    fill: white;
+    stroke: black;
+    stroke-width: 2px;
 }
