@@ -5,8 +5,9 @@ const height = 1000;
 const geoDataPath = '/data/nasageo.json'; //link to geojson
 const saDataPath = '/data/covid_south_america_weekly_trend.csv';
 const naDataPath = '/data/covid_south_america_weekly_trend.csv';
-const proj_scale = 230; //scale of projection
-const def_trans = [800, 700] //default translation
+const proj_scale = 245; //scale of projection
+const def_trans = [900, 710] //default translation
+const zoom_range = [1, 42] //
 
 //ENUMS
 const NORTH_AMERICA = 0;
@@ -90,13 +91,16 @@ Handles when a country is selected (clicked)
 */
 function selectCountry(element){
     console.log(element.getAttribute('name'))
+
+    //todo: zoom on country select
+
 }
 
 //zoom/pan handling
 var zoom = d3.zoom()
-      .scaleExtent([1, 8])
-      .on('zoom', function(event) {
-          g.select('g')
-           .attr('transform', event.transform);
+    .scaleExtent(zoom_range)
+    .translateExtent([[0, 0], [width, height]])
+    .on('zoom', function(e) {
+        g.select('g').attr('transform', e.transform);
 });
 svg.call(zoom);
