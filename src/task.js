@@ -80,6 +80,7 @@ Handles when radiobuttons are clicked
     element: DOM element that has been clicked
 */
 function processClick(element){
+    //to do: zoom when mode is changed
     d3.select('#chorog').remove()
     drawViz(geoData, {na_data, sa_data}, element.value)
 }
@@ -93,6 +94,7 @@ function selectCountry(element){
     console.log(element.getAttribute('name'))
 
     //todo: zoom on country select
+    //https://observablehq.com/@d3/zoom-to-bounding-box
 
 }
 
