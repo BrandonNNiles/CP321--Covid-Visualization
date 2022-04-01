@@ -16,6 +16,7 @@ p{
     background-color: #EDD4B2;
     width: fit-content;
     padding: 20px 20px 20px 20px;
+    margin-top: 50px;
 }
 
 svg{
@@ -42,4 +43,12 @@ svg{
 .task{
     width: 70%;
     margin: auto;
+}
+
+.radiodiv{
+    border: 1px solid black;
+    margin-top: 5px;
+    margin-bottom: 50px;
+    padding-left: 4px;
+    float:left;
 }
