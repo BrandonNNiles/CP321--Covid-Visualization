@@ -25,13 +25,12 @@ svg{
 .country{
     fill: purple;
 }
-.country:hover{
-    fill: white;
-    stroke: red;
-    stroke-width: 1;
-}
+
 #tasksvg{
     border: 3px dashed black;
+}
+.country:hover{
+    fill: white;
 }
 
 .center{

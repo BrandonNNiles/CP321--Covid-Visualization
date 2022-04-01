@@ -5,7 +5,8 @@ const height = 1000;
 const geoDataPath = '/data/nasageo.json'; //link to geojson
 const saDataPath = '/data/covid_south_america_weekly_trend.csv';
 const naDataPath = '/data/covid_south_america_weekly_trend.csv';
-const proj_scale = 140; //scale of projection
+const proj_scale = 230; //scale of projection
+const def_trans = [800, 700] //default translation
 
 //ENUMS
 const NORTH_AMERICA = 0;
@@ -23,9 +24,15 @@ let sa_data
 const svg = d3.select('#Task').append('svg')
     .attr('width', width)
     .attr('height', height)
-    .attr('id', 'tasksvg')
+    .attr('id', 'tasksvg');
 
-const proj = d3.geoMercator().scale(proj_scale);
+const g = svg.append('g').attr('id', 'g')
+
+
+
+const proj = d3.geoMercator()
+                .scale(proj_scale)
+                .translate(def_trans)
 const path = d3.geoPath(proj);
 
 /*drawViz(geo, stats, cont_mode)
@@ -35,10 +42,8 @@ Draws our visualization
     cont_mode: integer representation of continents to display, see enums
 */
 let drawViz = (geo, stats, cont_mode) => {
-    const g = svg.append('g')
     const chorog = g.append('g')
         .attr('id', 'chorog')
-        .attr('transform', 'translate(0, 200)');
 
     chorog.selectAll('path')
         .data(geo.features)
@@ -48,6 +53,8 @@ let drawViz = (geo, stats, cont_mode) => {
             if (cont_mode != ALL) {return d.properties.continent == modes[cont_mode]}
             return d;
         })
+        .attr('name', d => d.properties.name)
+        .attr('onclick', 'selectCountry(this)')
         .attr('class', 'country')
         .attr('d', path)
 }
@@ -75,3 +82,21 @@ function processClick(element){
     d3.select('#chorog').remove()
     drawViz(geoData, {na_data, sa_data}, element.value)
 }
+
+/* selectCountry(element)
+Handles when a country is selected (clicked)
+    element: DOM element that has been clicked
+
+*/
+function selectCountry(element){
+    console.log(element.getAttribute('name'))
+}
+
+//zoom/pan handling
+var zoom = d3.zoom()
+      .scaleExtent([1, 8])
+      .on('zoom', function(event) {
+          g.select('g')
+           .attr('transform', event.transform);
+});
+svg.call(zoom);
