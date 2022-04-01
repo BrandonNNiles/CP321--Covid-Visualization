@@ -46,7 +46,7 @@ let drawViz = (geo, stats, cont_mode) => {
     const chorog = g.append('g')
         .attr('id', 'chorog')
 
-    chorog.selectAll('path')
+    chorog.selectAll('path') //draw countries
         .data(geo.features)
         .enter()
         .append('path')
@@ -58,20 +58,56 @@ let drawViz = (geo, stats, cont_mode) => {
         .attr('onclick', 'selectCountry(this)')
         .attr('class', 'country')
         .attr('d', path)
+
+    //Draw absoloute cases
+
+    let totalcases = 0 //count total cases
+    if(cont_mode != NORTH_AMERICA){ // do SA
+        console.log(na_data)
+        /*
+        sa_data.forEach(function(item, index){
+            totalcases += item[1]
+        });
+        */
+
+    }
+    if(cont_mode != SOUTH_AMERICA){ // do NA
+
+    }
+
+    const absg = g.append('g')
+        .attr('id', 'absg')
+    
+    const casesback = absg.append('rect')
+        .attr('x', 290)
+        .attr('y', 380)
+        .attr('width', 130)
+        .attr('height', 30)
+        .attr('fill', 'white')
+        .attr('stroke', 'black')
+    const casestext =  absg.append('text')
+        .text('Total cases: ' + totalcases)
+        .attr('x', 300)
+        .attr('y', 400)
+
+    
 }
 
 //Load and parse data
+d3.csv(saDataPath).then((data, error) => {
+    if(error){console.log(error); return;}
+    sa_data = data
+})
+
+d3.csv(naDataPath).then((data, error) => {
+    if(error){console.log(error); return;}
+    na_data = data
+})
+
 d3.json(geoDataPath).then((data, error) => {
     if(error){console.log(error); return;} 
     geoData = data
-    d3.csv(saDataPath).then(data, error => {
-        if(error){console.log(error); return;}
-        sa_data = data
-        d3.csv(naDataPath).then(data, error => {
-            if(error){console.log(error); return;}
-            na_data = data
-        })
-    })
+    
     drawViz(geoData, {na_data, sa_data}, 2)
 })
 
