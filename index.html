@@ -10,29 +10,48 @@
     <link rel="stylesheet" href="stylesheets/style.css">
 </head>
 <body>
-    <div class = "task">
+    <div class = "task" class = 'gridcontainer'>
         <h1>Covid-19 Visualization</h1>
-        <div id = "TaskMain" ></div>
-        <div id = 'radios' class = 'center'>
-            <div class = 'radiodiv'>
-                All<input type="radio" name="cont_select" value="2" id="radio_all" class ="cont_radio" onclick="processClick(this)" checked="checked">
-            </div>
-            <div class = 'radiodiv'>
-                North America<input type="radio" name="cont_select" value="0" id="radio_na" class ="cont_radio" onclick="processClick(this)">
-            </div>
-            <div class = 'radiodiv'>
-                South America<input type="radio" name="cont_select" value="1" id="radio_sa" class ="cont_radio" onclick="processClick(this)">
-            </div>
+        <div id = "TaskMain" class = 'gridcontainerb'>
+            <div class = 'svgheader'>World Data</div>
+            <div class = 'svgheader'>World Map</div>
+            <div class = 'svgheader'>Country Data</div>
         </div>
-        <div id = 'explain'>
-            <h2>Task description</h2>
-            <p>1. Use the above radio buttons to change which continents are visible.<br>
-                2. Absoloute cases are shown with a single stacked barchart with a) and b) on x axis.<br>
-                Additionally shown as a text element: "Total cases: ___"<br>
-                3. Countries where increased/decreased shown as choropleth.<br>
-                4. Top 5 / bottom 5 countries with lowest cases per million shown as 2 pie charts.<br>
-                5. Click on a country to select it to show all of the data for that country.
-            </p>
+        <div class = 'gridcontainer'>
+            <div id = 'radios' class = griditem>
+                <div class = 'radiotip'> Select Region:</div>
+                <div class = 'radiodiv'>
+                    All<input type="radio" name="cont_select" value="2" id="radio_all" class ="cont_radio" onclick="processClick(this)" checked="checked">
+                </div>
+                <div class = 'radiodiv'>
+                    North America<input type="radio" name="cont_select" value="0" id="radio_na" class ="cont_radio" onclick="processClick(this)">
+                </div>
+                <div class = 'radiodiv'>
+                    South America<input type="radio" name="cont_select" value="1" id="radio_sa" class ="cont_radio" onclick="processClick(this)">
+                </div>
+            </div>
+            <div class = 'griditem'>
+                <h2>Task description</h2>
+                <p>1. Use the above radio buttons to change which continents are visible.<br>
+                    2. Absoloute cases are shown with a single stacked barchart with a) and b) on x axis.<br>
+                    Additionally shown as a text element: "Total cases: ___"<br>
+                    3. Countries where increased/decreased shown as choropleth.<br>
+                    4. Top 5 / bottom 5 countries with lowest cases per million shown as 2 pie charts.<br>
+                    5. Click on a country to select it to show all of the data for that country.
+                </p>
+            </div>
+            <div class = 'griditem'>
+                <div class = 'radiotip'> Choropleth Display:</div>
+                <div class = 'radiodiv'>
+                    Increase/Decrease<input type="radio" name="choro_select" value="0" id="radio_inc" class ="cont_radio" onclick="processClick(this)" checked="checked">
+                </div>
+                <div class = 'radiodiv'>
+                    Absoloute Cases<input type="radio" name="choro_select" value="1" id="radio_abs" class ="cont_radio" onclick="processClick(this)">
+                </div>
+                <div class = 'radiodiv'>
+                    Top 5/Bottom 5<input type="radio" name="choro_select" value="2" id="radio_top" class ="cont_radio" onclick="processClick(this)">
+                </div>
+            </div>
         </div>
     </div>
     Brandon Niles CP 321 Winter 2022 Project

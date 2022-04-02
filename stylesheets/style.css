@@ -14,19 +14,22 @@ p{
     font-size: 1.2em;
     color: #4D243D;
     background-color: #EDD4B2;
-    width: fit-content;
     padding: 20px 20px 20px 20px;
     margin-top: 50px;
+    margin: auto;
+    width: fit-content;
 }
 
 svg{
-    background-color: lightblue;
+    background-color: #EDD4B2;
+    border: 1px solid black
 }
-
 
 #tasksvg{
+    background-color: lightblue;
     border: 3px dashed black;
 }
+
 .country:hover{
     fill: white;
 }
@@ -38,7 +41,7 @@ svg{
 }
 
 .task{
-    width: 70%;
+    width: 90%;
     margin: auto;
 }
 
@@ -47,6 +50,12 @@ svg{
     margin-top: 5px;
     margin-bottom: 50px;
     padding-left: 4px;
+    float:left;
+}
+.radiotip{
+    margin-top: 5px;
+    margin-bottom: 50px;
+    padding-right: 4px;
     float:left;
 }
 
@@ -60,7 +69,17 @@ svg{
     margin: 5px 5px 5px 5px;
 }
 
-#TaskMain{
+.gridcontainer{
+    display: inline-grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gridcontainerb{
     display: inline-grid;
     grid-template-columns: auto auto auto;
+}
+
+.griditem{
+    margin-top: 20px;
+    margin: 5px 5px 5px 20px;
 }

@@ -3,13 +3,13 @@
 const geoDataPath = '/data/nasageo.json'; //link to geojson
 const saDataPath = '/data/covid_south_america_weekly_trend.csv';
 const naDataPath = '/data/north_america_covid_weekly_trend.csv';
-const proj_scale = 245; //scale of projection
-const def_trans = [900, 710] //default translation
+const proj_scale = 200; //scale of projection
+const def_trans = [660, 600] //default translation
 const zoom_range = [1, 42] // range of zoom of map
 
     //SVGs
 const svgpadding = [10, 10]
-const width = screen.width / 4 - svgpadding[0];
+const width = screen.width  * 0.9 / 3 - svgpadding[0];
 const height = screen.width / 3 - svgpadding[1];
 
     //Total cases box:
@@ -136,8 +136,7 @@ d3.csv(naDataPath).then((data, error) => {
 
 d3.json(geoDataPath).then((data, error) => {
     if(error){console.log(error); return;} 
-    geoData = data
-    
+    geoData = data 
     drawViz(geoData, {na_data, sa_data}, 2)
 })
 
