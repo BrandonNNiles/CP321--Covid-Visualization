@@ -19,18 +19,25 @@ const box_font_size = 20
     //Country selection:
 const selected_colour = 'white' //should be distinct from choro
 
+let geoData
+let na_data
+let sa_data
+
 //ENUMS
 const NORTH_AMERICA = 0;
 const SOUTH_AMERICA = 1;
 const ALL = 2;
+
 const modes = {
     0: "North America",
     1: "South America"
 }
+let cont_select = ALL;
 
-let geoData
-let na_data
-let sa_data
+const INCREASE = 0;
+const ABSO = 1;
+const TOP5 = 2;
+let choromode = INCREASE;
 
 const globalsvg = d3.select('#TaskMain').append('svg')
     .attr('class', 'tripsvg')
@@ -146,9 +153,12 @@ Handles when radiobuttons are clicked
 */
 function processClick(element){
     //to do: zoom when mode is changed //MID STAGE
+    if(element.getAttribute('name') == 'cont_select'){
+        cont_select = element.value
+    }
     d3.select('#chorog').remove()
     d3.select('#absg').remove()
-    drawViz(geoData, {na_data, sa_data}, element.value)
+    drawViz(geoData, {na_data, sa_data}, cont_select)
 }
 
 /* selectCountry(element)
