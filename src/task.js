@@ -1,13 +1,16 @@
 
 //Configurables
-const width = 1000;
-const height = 1000;
 const geoDataPath = '/data/nasageo.json'; //link to geojson
 const saDataPath = '/data/covid_south_america_weekly_trend.csv';
 const naDataPath = '/data/north_america_covid_weekly_trend.csv';
 const proj_scale = 245; //scale of projection
 const def_trans = [900, 710] //default translation
 const zoom_range = [1, 42] // range of zoom of map
+
+    //SVGs
+const svgpadding = [10, 10]
+const width = screen.width / 4 - svgpadding[0];
+const height = screen.width / 3 - svgpadding[1];
 
     //Total cases box:
 const box_pos = [5,5] //top left
@@ -29,14 +32,24 @@ let geoData
 let na_data
 let sa_data
 
-const svg = d3.select('#Task').append('svg')
+const globalsvg = d3.select('#TaskMain').append('svg')
+    .attr('class', 'tripsvg')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('id', 'globalsvg');
+
+const svg = d3.select('#TaskMain').append('svg')
+    .attr('class', 'tripsvg')
     .attr('width', width)
     .attr('height', height)
     .attr('id', 'tasksvg');
+const countrysvg = d3.select('#TaskMain').append('svg')
+    .attr('class', 'tripsvg')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('id', 'countrysvg');
 
 const g = svg.append('g').attr('id', 'g')
-
-
 
 const proj = d3.geoMercator()
                 .scale(proj_scale)
@@ -133,7 +146,7 @@ Handles when radiobuttons are clicked
     element: DOM element that has been clicked
 */
 function processClick(element){
-    //to do: zoom when mode is changed
+    //to do: zoom when mode is changed //MID STAGE
     d3.select('#chorog').remove()
     d3.select('#absg').remove()
     drawViz(geoData, {na_data, sa_data}, element.value)
@@ -142,7 +155,6 @@ function processClick(element){
 /* selectCountry(element)
 Handles when a country is selected (clicked)
     element: DOM element that has been clicked
-
 */
 let selected_country
 function selectCountry(element){
@@ -154,7 +166,9 @@ function selectCountry(element){
     selected_country = element
 
     //todo: zoom on country select
-    //https://observablehq.com/@d3/zoom-to-bounding-box
+    //https://observablehq.com/@d3/zoom-to-bounding-box //MID STAGE
+    //button to refocus on selected country? LATE STAGE
+    //search bar to select country? LATE STAGE
 
 }
 

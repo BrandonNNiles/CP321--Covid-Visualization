@@ -55,3 +55,12 @@ svg{
     stroke: black;
     stroke-width: 2px;
 }
+
+.tripsvg{
+    margin: 5px 5px 5px 5px;
+}
+
+#TaskMain{
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+}
