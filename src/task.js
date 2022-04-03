@@ -127,10 +127,6 @@ let drawViz = (geo, stats, cont_mode) => {
 
 //Load and parse data
 
-/*
-    TO DO: FIX LOADING ORDER TO PREVENT ERRORS
-*/
-
 d3.csv(saDataPath).then((data, error) => {
     if(error){console.log(error); return;}
     sa_data = data
