@@ -4,24 +4,25 @@ const geoDataPath = '/data/nasageo.json'; //link to geojson
 const saDataPath = '/data/covid_south_america_weekly_trend.csv';
 const naDataPath = '/data/north_america_covid_weekly_trend.csv';
 const proj_scale = 200; //scale of projection
-const def_trans = [660, 600] //default translation
-const zoom_range = [1, 42] // range of zoom of map
+const def_trans = [660, 600]; //default translation
+const zoom_range = [1, 42]; // range of zoom of map
+const country_header_label = "Selected country: ";
 
     //SVGs
-const svgpadding = [10, 10]
+const svgpadding = [10, 10];
 const width = screen.width  * 0.9 / 3 - svgpadding[0];
 const height = screen.width / 3 - svgpadding[1];
 
     //Total cases box:
-const box_pos = [5,5] //top left
-const box_text_padding = [5, 5]
-const box_font_size = 20
+const box_pos = [5,5]; //top left
+const box_text_padding = [5, 5];
+const box_font_size = 20;
     //Country selection:
-const selected_colour = 'white' //should be distinct from choro
+const selected_colour = 'white'; //should be distinct from choro
 
-let geoData
-let na_data
-let sa_data
+let geoData;
+let na_data;
+let sa_data;
 
 //ENUMS
 const NORTH_AMERICA = 0;
@@ -31,13 +32,15 @@ const ALL = 2;
 const modes = {
     0: "North America",
     1: "South America"
-}
+};
 let cont_select = ALL;
 
 const INCREASE = 0;
 const ABSO = 1;
 const TOP5 = 2;
 let choromode = INCREASE;
+
+let selected_country;
 
 const globalsvg = d3.select('#TaskMain').append('svg')
     .attr('class', 'tripsvg')
@@ -56,11 +59,11 @@ const countrysvg = d3.select('#TaskMain').append('svg')
     .attr('height', height)
     .attr('id', 'countrysvg');
 
-const g = svg.append('g').attr('id', 'g')
+const g = svg.append('g').attr('id', 'g');
 
 const proj = d3.geoMercator()
                 .scale(proj_scale)
-                .translate(def_trans)
+                .translate(def_trans);
 const path = d3.geoPath(proj);
 
 /*drawViz(geo, stats, cont_mode)
@@ -125,6 +128,75 @@ let drawViz = (geo, stats, cont_mode) => {
     ctx.insertBefore(ctx.getElementById('casebox'), textElm);
 }
 
+function drawExampleWorld(){
+
+    const bar_dims = [300, 300]
+    const pie_dims = [300, 300]
+
+    const bars = globalsvg.append('g')
+    bars.append('rect')
+        .attr('width', bar_dims[0])
+        .attr('height', bar_dims[1])
+        .attr('x', (width / 2) - (bar_dims[0] / 2))
+        .attr('y', (height / 4) - (bar_dims[1] / 2))
+        .attr('fill', 'black')
+        .attr('id', 'barchart')
+
+    const pie_top = globalsvg.append('g')
+    pie_top.append('rect')
+        .attr('width', pie_dims[0])
+        .attr('height', pie_dims[1])
+        .attr('x', (width / 3.5) - (pie_dims[0] / 2))
+        .attr('y', (height / 1.35) - (pie_dims[1] / 2))
+        .attr('fill', 'black')
+        .attr('id', 'pietop')
+    const pie_bottom = globalsvg.append('g')
+    pie_bottom.append('rect')
+        .attr('width', pie_dims[0])
+        .attr('height', pie_dims[1])
+        .attr('x', (width / 1.4) - (pie_dims[0] / 2))
+        .attr('y', (height / 1.35) - (pie_dims[1] / 2))
+        .attr('fill', 'black')
+        .attr('id', 'piebottom')
+    
+    const heading1 = globalsvg.append('text')
+        .text("Absoloute Cases")
+        .attr('x', width / 2)
+        .attr('y', 50)
+        .attr("text-anchor", "middle")
+        .attr('text-align', 'center')
+    const heading2 = globalsvg.append('text')
+        .text("Top 5 and Bottom 5 Countries")
+        .attr('x', width / 2)
+        .attr('y', 450)
+        .attr("text-anchor", "middle")
+        .attr('text-align', 'center')
+
+}
+drawExampleWorld()
+
+function drawCountryInfo(){
+    let header_text = country_header_label
+    
+    if(selected_country == null){
+        header_text += "None"
+    } else {
+        header_text += selected_country.getAttribute('name')
+    }
+    
+    const cg = countrysvg.append('g')
+        .attr('id', 'country_g')
+    
+    const header = cg.append('text')
+        .text(header_text)
+        .attr('id', 'country_header')
+        .attr('x', 10)
+        .attr('y', 50)
+    
+    if(selected_country != null){return;} //We don't want to draw anything after label
+}
+drawCountryInfo()
+
 //Load and parse data
 
 d3.csv(saDataPath).then((data, error) => {
@@ -161,7 +233,6 @@ function processClick(element){
 Handles when a country is selected (clicked)
     element: DOM element that has been clicked
 */
-let selected_country
 function selectCountry(element){
     if (selected_country != null){
         selected_country.setAttribute('fill', selected_country.getAttribute('prev_colour'))
@@ -169,6 +240,8 @@ function selectCountry(element){
 
     element.setAttribute('fill', selected_colour)
     selected_country = element
+    d3.select('#country_g').remove()
+    drawCountryInfo()
 
     //todo: zoom on country select
     //https://observablehq.com/@d3/zoom-to-bounding-box //MID STAGE
