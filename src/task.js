@@ -49,6 +49,13 @@ var incScale = d3.scaleQuantize()
 var decScale = d3.scaleQuantize()
     .domain([0,-5000])
     .range(["#FAB733", "#ACB334", "#69B34C"]);
+var absScale = d3.scaleLinear()
+    //.domain([0, Math.max(d3.max(sa_data, function(d) {return d[1]}), na_data)])
+    .domain([0, 800000]) //find max domain with code!
+    .range(["white", "red"]);
+
+
+//GLOBALS
 
 const globalsvg = d3.select('#TaskMain').append('svg')
     .attr('class', 'tripsvg')
@@ -90,18 +97,18 @@ function processColour(data){
     } else {
         return 'black' //in the case the country doesn't actually exist in data
     }
+    let obj = dataset.find(d => d['Country/Other'] === data.properties.name) //geojson -> csv find
     switch(choromode){
         case INCREASE:
-            let obj = dataset.find(d => d['Country/Other'] === data.properties.name)
-            let diff = parseInt(obj['Cases in the preceding 7 days']) - parseInt(obj['Cases in the last 7 days'])
-            //console.log(data.properties.name)
-            //console.log(diff)
+            let diff = parseInt(obj['Cases in the last 7 days']) - parseInt(obj['Cases in the preceding 7 days'])
             if(diff > 0){
                 return incScale(diff)
             }
             return decScale(diff);
             break;
         case ABSO:
+            //I wrote 'cases...' alot, -> constant please TODO
+            return absScale(obj['Cases in the last 7 days'])
             break;
         case TOP5:
             break;
@@ -117,6 +124,12 @@ Draws our visualization
     cont_mode: integer representation of continents to display, see enums
 */
 let drawViz = (geo, stats, cont_mode) => {
+    sa_data.forEach(function(d) {
+        d['Cases in the last 7 days'] = +d['Cases in the last 7 days'] ;
+    });
+    na_data.forEach(function(d) {
+        d['Cases in the last 7 days'] = +d['Cases in the last 7 days'] ;
+    });
     d3.select('#chorog').remove()
     d3.select('#absg').remove()
     const chorog = g.append('g')
@@ -135,7 +148,7 @@ let drawViz = (geo, stats, cont_mode) => {
         .attr('class', 'country')
         .attr('d', path)
         .attr('fill', d => processColour(d)) //set colour with choro
-        .attr('prev_colour', 'purple') //store same colour here to restore it when unselected
+        .attr('prev_colour', d => processColour(d)) //store same colour here to restore it when unselected
 
     //Draw absoloute cases
 
@@ -278,7 +291,6 @@ function processClick(element){
     } else if(element.getAttribute('name') == 'choro_select'){
         choromode = parseInt(element.value);
     }
-    console.log(choromode)
     drawViz(geoData, {na_data, sa_data}, cont_select)
 }
 
