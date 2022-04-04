@@ -155,7 +155,7 @@ let drawViz = (geo, stats, cont_mode) => {
 
     d3.select('#chorog').remove()
     d3.select('#absg').remove()
-    d3.select('#maptitle').remove()
+    d3.select('#titleg').remove()
     const chorog = g.append('g')
         .attr('id', 'chorog')
 
@@ -245,14 +245,31 @@ let drawViz = (geo, stats, cont_mode) => {
             break;
     }
     drawLegend2('#tasksvg', width * 0.93, height * 0.8, myScale, 'Legend', 'maplegend')
-    svg.append('text')
-        .text(maptitle)
+
+    const titleg = g.append('svg')
+        .attr('id', 'titleg')
+    
+    const titletext = titleg.append('text')
+    .text(maptitle)
         .attr('text-align', 'center')
         .attr('text-anchor', 'middle')
         .attr('x', width / 2)
         .attr('y', 35)
         .attr('id', 'maptitle')
         .attr('font-size', '1.2em')
+    var atx = document.getElementById("titleg"),
+    textElme = atx.getElementById("maptitle"),
+    SVGRect2 = textElme.getBBox();
+    
+    const titlebox = titleg.append('rect')
+        .attr('id', 'titlebox')
+        .attr('x', (width / 2) - SVGRect2.width / 2 - box_text_padding[0])
+        .attr('y', box_pos[1] + 5)
+        .attr('width', SVGRect2.width + (box_text_padding[0] * 2))
+        .attr('height', box_font_size + (box_text_padding[1] * 2))
+        .attr('fill', 'white')
+        .attr('stroke', 'black')
+    atx.insertBefore(atx.getElementById('titlebox'), textElme);
 }
 
 function drawExampleWorld(){
@@ -432,7 +449,6 @@ function drawLegend2(canvas, posx, posy, scale, legendTitle, id){
     scale.domain().forEach(function (value, index){
         addEntry(scale(value), 1, value, index + 1, 0)
     })
-
 
     function addEntry(color, opacity, value, num, offset){
         var box = legend.append('g');
