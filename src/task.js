@@ -58,6 +58,9 @@ var absScale = d3.scaleLinear()
 
 //GLOBALS
 
+let topcountries = new Array();
+let bottomcountries = new Array()
+
 const globalsvg = d3.select('#TaskMain').append('svg')
     .attr('class', 'tripsvg')
     .attr('width', width)
@@ -112,11 +115,19 @@ function processColour(data){
             return absScale(obj['Cases in the preceding 7 days'])
             break;
         case TOP5:
+            if(topcountries.includes(obj[['Country/Other']])){
+                return 'green';
+            }
+            if(bottomcountries.includes(obj[['Country/Other']])){
+                return 'red'
+            }
+            return 'white'
             break;
         default:
             return 'white' //this should never happen
     }
 }
+
 
 /*drawViz(geo, stats, cont_mode)
 Draws our visualization
@@ -125,9 +136,28 @@ Draws our visualization
     cont_mode: integer representation of continents to display, see enums
 */
 let drawViz = (geo, stats, cont_mode) => {
-    
-    //selected_country = null;//sadly need this
-    //drawCountryInfo() //this too
+    //top5/bottom5 calc
+    var top = new Array();
+    sa_data.forEach(function(item, index){
+        top.push([item['Country/Other'], parseInt(item['Cases in the last 7 days/1M pop'])])
+    })
+    na_data.forEach(function(item, index){
+        top.push([item['Country/Other'], parseInt(item['Cases in the last 7 days/1M pop'])])
+    })
+    top.sort(function(a,b){
+        if(a[1] > b[1]){
+            return 1;
+        }
+        if(a[1] < b[1]){
+            return -1;
+        }
+        return 0
+    })
+    console.log(top)
+    for(i = 0; i < 5; i++){
+        bottomcountries[i] = top[top.length - i - 1][0]
+        topcountries[i] = top[i][0]
+    }
 
     d3.select('#chorog').remove()
     d3.select('#absg').remove()
@@ -309,7 +339,6 @@ function selectCountry(element){
             .each(function (d, i){
                 var path_name = d3.select(this).attr('name')
                 if(path_name == selected_country.getAttribute('name')){
-                    console.log(path_name)
                     var curr_sel = d3.select(this)
                     curr_sel.attr('fill', curr_sel.attr('prev_colour'))
                 }
