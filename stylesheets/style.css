@@ -92,3 +92,7 @@ svg{
 #footer{
     font-size: 1.1em;
 }
+
+#deselect_button{
+    border: none;
+}

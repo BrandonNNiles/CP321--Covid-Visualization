@@ -73,6 +73,8 @@ Draws our visualization
     cont_mode: integer representation of continents to display, see enums
 */
 let drawViz = (geo, stats, cont_mode) => {
+    d3.select('#chorog').remove()
+    d3.select('#absg').remove()
     const chorog = g.append('g')
         .attr('id', 'chorog')
 
@@ -88,7 +90,12 @@ let drawViz = (geo, stats, cont_mode) => {
         .attr('onclick', 'selectCountry(this)')
         .attr('class', 'country')
         .attr('d', path)
-        .attr('fill', 'purple') //set colour with choro
+        .attr('fill', d => {
+            if(selected_country != null && d.properties.name == selected_country.getAttribute('name')){
+                return selected_colour;
+            }
+            return 'purple'
+        }) //set colour with choro
         .attr('prev_colour', 'purple') //store same colour here to restore it when unselected
 
     //Draw absoloute cases
@@ -104,6 +111,7 @@ let drawViz = (geo, stats, cont_mode) => {
             totalcases += parseInt(item['Cases in the last 7 days'])
         });
     }
+
 
     const absg = g.append('svg')
         .attr('id', 'absg')
@@ -126,6 +134,7 @@ let drawViz = (geo, stats, cont_mode) => {
         .attr('width', SVGRect.width + (box_text_padding[0] * 2))
         .attr('height', box_font_size + (box_text_padding[1] * 2))
     ctx.insertBefore(ctx.getElementById('casebox'), textElm);
+    
 }
 
 function drawExampleWorld(){
@@ -175,8 +184,12 @@ function drawExampleWorld(){
 }
 drawExampleWorld()
 
+/*drawCountryInfo()
+Draws specialized visulization and data for a selected country.
+*/
 function drawCountryInfo(){
     let header_text = country_header_label
+    d3.select('#country_g').remove() //Remove if exists for redraw
     
     if(selected_country == null){
         header_text += "None"
@@ -224,8 +237,6 @@ function processClick(element){
     if(element.getAttribute('name') == 'cont_select'){
         cont_select = element.value
     }
-    d3.select('#chorog').remove()
-    d3.select('#absg').remove()
     drawViz(geoData, {na_data, sa_data}, cont_select)
 }
 
@@ -234,13 +245,13 @@ Handles when a country is selected (clicked)
     element: DOM element that has been clicked
 */
 function selectCountry(element){
+    if(element == null){return;}
     if (selected_country != null){
         selected_country.setAttribute('fill', selected_country.getAttribute('prev_colour'))
     }
 
     element.setAttribute('fill', selected_colour)
     selected_country = element
-    d3.select('#country_g').remove()
     drawCountryInfo()
 
     //todo: zoom on country select
@@ -248,6 +259,16 @@ function selectCountry(element){
     //button to refocus on selected country? LATE STAGE
     //search bar to select country? LATE STAGE
 
+}
+
+/* removeSelection()
+Unselects the currently selected country.
+Meant to be used with a button.
+*/
+function removeSelection(){
+    selected_country = null;
+    drawCountryInfo()
+    drawViz(geoData, {na_data, sa_data}, cont_select)
 }
 
 //zoom/pan handling
