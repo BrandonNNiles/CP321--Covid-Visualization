@@ -345,6 +345,11 @@ function drawCountryInfo(){
         .attr('y', 50)
     
     if(selected_country != null){return;} //We don't want to draw anything after label
+
+    //Draw barchart
+    //cases (%change) deaths (%change)
+    drawBarChart('Cases and Deaths', 'country_g', '', '# of people', 300, 300, obj )
+    //cases vs deaths /1m
 }
 drawCountryInfo()
 
@@ -528,7 +533,7 @@ function drawLegend2(canvas, posx, posy, scale, legendTitle, id){
     legend.attr("transform", "translate("+posx + ','+posy+")");
 }
 
-function drawLegendTop(canvas, posx, posy, scale, legendTitle, id){
+function drawLegendTop(canvas, posx, posy, scale, legendTitle, id){ //slightly modified legend func
     d3.select("." + id).remove()
     var legend  = d3.select(canvas).append('g').attr('class', id);
 
@@ -549,13 +554,10 @@ function drawLegendTop(canvas, posx, posy, scale, legendTitle, id){
     .attr('y', 0)
     .text(legendTitle);
 
-
-
     addEntry('black', 1, 'Selected', 6, -15)
-    addEntry('green', 1, 'Lowest 5', 3, -3)
+    addEntry('green', 1, 'Lowest 5', 2, -3)
     addEntry('red', 1, 'Highest 5', 1, -3)
-    console.log(topcountries)
-
+    addEntry('white', 1, 'Other', 3, -3)
 
     function addEntry(color, opacity, value, num, offset){
         var box = legend.append('g');
@@ -581,4 +583,66 @@ function drawLegendTop(canvas, posx, posy, scale, legendTitle, id){
     }
 
     legend.attr("transform", "translate("+posx + ','+posy+")");
+}
+
+function drawBarChart(title, canvas, xAxisLabel, yAxisLabel, width, height, obj ){
+
+    //Configurables
+    const border = {left: 60, right: 20, bottom: 60, top: 50}; //Padding
+    const xAxisData = d => d.marks; //Data on the x axis
+    const yAxisData = d => d.Student; //Data on the y axis
+
+    //Create 500x500 svg element
+    const barchart = d3.select("#" + canvas)
+        .append("svg")
+        .classed('barchart', true)
+        .style('border', '4px solid black')
+        .style('width', String(width))
+        .style('height', String(height));
+
+    const usableWidth = width - (border.left + border.right);
+    const usableHeight = height - (border.top + border.bottom);
+
+    const g = barchart.append('g')
+    .attr('transform', `translate(${border.left},${border.top})`); //Padding
+
+
+    const xScale = d3.scaleLinear().domain([0, d3.max(data, xAxisData)]).range([0, usableWidth]); //scale calc
+    const yScale = d3.scaleBand().domain(data.map(yAxisData)).range([0, usableHeight])
+        .padding(0.15);
+
+    //Axis
+    const xTick = number => d3.format('.1s')(number).replace('G', 'B');
+    const xAxis = d3.axisBottom(xScale).tickFormat(xTick).tickSize(-usableHeight);
+
+    g.append('g').call(d3.axisLeft(yScale));
+    const xAxisG = g.append('g').call(xAxis)
+    .attr('transform', `translate(0,${usableHeight})`);
+
+    var i = 0;
+    g.selectAll('rect').data(data) //Draw bars
+        .enter().append('rect')
+        .attr("id", id => i += 1)
+        .attr('y', d => yScale(yAxisData(d)))
+        .attr('height', yScale.bandwidth())
+        .attr('width', d => xScale(xAxisData(d)))
+        .attr('opacity', 1);
+    
+    barchart.append('text')
+        .attr('class', 'title')
+        .attr('y', 30)
+        .attr('x', 28)
+        .text(title);    
+    xAxisG.append('text')
+        .attr('class', 'axis-label')
+        .attr('y', border.bottom / 1.4)
+        .attr('x', usableWidth / 2)
+        .text(xAxisLabel);
+    barchart.append("text")
+        .attr("class", "axis-label")
+        .attr("text-anchor", "middle")
+        .attr("y", 30)
+        .attr("x", -usableHeight / 2 - 35)
+        .attr("transform", "rotate(-90)")
+        .text(yAxisLabel);
 }
