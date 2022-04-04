@@ -229,7 +229,7 @@ let drawViz = (geo, stats, cont_mode) => {
     switch (choromode){
         case(INCREASE):
             myScale = incScale
-            maptitle = "Increases and Decreases in Cases"
+            maptitle = "# of Case Changes From Previous Week"
             break;
         case(ABSO):
             maptitle = "Absoloute Cases"
@@ -241,10 +241,13 @@ let drawViz = (geo, stats, cont_mode) => {
             break;
         case(TOP5):
             maptitle = "Top 5/Bottom 5 (cases per 1M people)"
-            myScale = incScale
             break;
     }
-    drawLegend2('#tasksvg', width * 0.93, height * 0.8, myScale, 'Legend', 'maplegend')
+    if (choromode != TOP5){
+        drawLegend2('#tasksvg', width * 0.93, height * 0.8, myScale, 'Legend', 'maplegend')
+    } else{
+        drawLegendTop('#tasksvg', width * 0.93, height * 0.8, myScale, 'Legend', 'maplegend')
+    }
 
     const titleg = g.append('svg')
         .attr('id', 'titleg')
@@ -264,7 +267,7 @@ let drawViz = (geo, stats, cont_mode) => {
     const titlebox = titleg.append('rect')
         .attr('id', 'titlebox')
         .attr('x', (width / 2) - SVGRect2.width / 2 - box_text_padding[0])
-        .attr('y', box_pos[1] + 5)
+        .attr('y', box_pos[1] + 7)
         .attr('width', SVGRect2.width + (box_text_padding[0] * 2))
         .attr('height', box_font_size + (box_text_padding[1] * 2))
         .attr('fill', 'white')
@@ -422,17 +425,18 @@ var zoom = d3.zoom()
 });
 svg.call(zoom);
 
+let legendCircleR = 5;
+let legendEntrySpacing = 20;
+
 function drawLegend2(canvas, posx, posy, scale, legendTitle, id){
     d3.select("." + id).remove()
     var legend  = d3.select(canvas).append('g').attr('class', id);
-    let legendCircleR = 5;
-    let legendEntrySpacing = 20;
 
     legend.append('rect')
         .attr('y', - 17)
-        .attr('x', -30)
-        .attr('width', 65)
-        .attr('height', 130) //we could dynamically resize but time constraints
+        .attr('x', -40)
+        .attr('width', 80)
+        .attr('height', 150) //we could dynamically resize but time constraints
         .attr('fill', 'white')
         .attr('stroke', 'black')
     
@@ -445,10 +449,113 @@ function drawLegend2(canvas, posx, posy, scale, legendTitle, id){
     .attr('y', 0)
     .text(legendTitle);
 
-    console.log(scale.domain())
-    scale.domain().forEach(function (value, index){
+    let ind;
+    let domain = scale.domain()
+
+    var gradcol = [scale.range()[0], scale.range()[scale.range().length - 1] ];
+    if(scale.range().length == 5){
+        gradcol.push(scale.range()[2])
+        let temp = gradcol[2]
+        gradcol[2] = gradcol[1]
+        gradcol[1] = temp
+
+    }
+    var gradient = legend.append('defs')
+      .append('linearGradient')
+      .attr('id', 'grad')
+      .attr('x1', '0%')
+      .attr('x2', '0%')
+      .attr('y1', '0%')
+      .attr('y2', '100%');
+    
+    gradient.selectAll('stop')
+      .data(gradcol)
+      .enter()
+      .append('stop')
+      .style('stop-color', function(d){ return d; })
+      .attr('offset', function(d,i){
+        return 100 * (i / (gradcol.length - 1)) + '%';
+      })
+    
+    legend.append('rect')
+      .attr('x', -30)
+      .attr('y', 15)
+      .attr('width', 20)
+      .attr('height', 85)
+      .style('fill', 'url(#grad)');
+
+    if (domain.length == 2){
+        domain.push((domain[0] + domain[1]) / 2)
+        domain.sort()
+    }
+    /*
+    domain.forEach(function (value, index){
         addEntry(scale(value), 1, value, index + 1, 0)
+        ind = index + 2.2;
     })
+    */
+   ind = 6
+    addEntry('black', 1, 'Selected', ind, -15)
+
+
+    function addEntry(color, opacity, value, num, offset){
+        var box = legend.append('g');
+        box.append("circle")
+            .attr("r", legendCircleR)
+            .attr("cx", -1.5 * legendCircleR)
+            .attr("cy", -legendCircleR / 2 - 1)
+            .style("fill", color)
+            .attr("opacity", opacity)
+            .style("stroke", "black");
+
+        box.append("text")
+            .attr("text-anchor", "left")
+            .attr('text-align', 'left')
+            .style('padding', "-20 -20 -20 -20")
+            .style('font-size', '0.7em')
+            .attr('x', 0)
+            .attr('y', 0)
+            .text(value);
+
+        box.attr("transform", "translate("+ parseInt(-10 + offset) + ', ' + legendEntrySpacing * num +")");
+
+    }
+    addEntry('red', 0, domain[0],1, 5);
+    if(domain.length > 2){
+        addEntry('red', 0, domain[Math.floor(domain.length / 2)],3, 5);
+    }
+    addEntry('red', 0, domain[domain.length - 1],5, 5);
+    legend.attr("transform", "translate("+posx + ','+posy+")");
+}
+
+function drawLegendTop(canvas, posx, posy, scale, legendTitle, id){
+    d3.select("." + id).remove()
+    var legend  = d3.select(canvas).append('g').attr('class', id);
+
+    legend.append('rect')
+        .attr('y', - 17)
+        .attr('x', -40)
+        .attr('width', 80)
+        .attr('height', 150) //we could dynamically resize but time constraints
+        .attr('fill', 'white')
+        .attr('stroke', 'black')
+    
+    legend.append('text') //Legend title
+    .attr("text-anchor", "middle")
+    .attr('text-align', 'center')
+    .style('padding', "-20 -20 -20 -20")
+    .style('font-size', '1em')
+    .attr('x', 0)
+    .attr('y', 0)
+    .text(legendTitle);
+
+
+
+    addEntry('black', 1, 'Selected', 6, -15)
+    addEntry('green', 1, 'Lowest 5', 3, -3)
+    addEntry('red', 1, 'Highest 5', 1, -3)
+    console.log(topcountries)
+
 
     function addEntry(color, opacity, value, num, offset){
         var box = legend.append('g');
