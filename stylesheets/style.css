@@ -31,7 +31,7 @@ svg{
 }
 
 .country:hover{
-    fill: white;
+    fill: black;
 }
 
 .center{
@@ -51,6 +51,7 @@ svg{
     margin-bottom: 50px;
     padding-left: 4px;
     float:left;
+    font-size: 0.9em;
 }
 .radiotip{
     margin-top: 5px;

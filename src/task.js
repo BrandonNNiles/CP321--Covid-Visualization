@@ -18,7 +18,7 @@ const box_pos = [5,5]; //top left
 const box_text_padding = [5, 5];
 const box_font_size = 20;
     //Country selection:
-const selected_colour = 'white'; //should be distinct from choro
+const selected_colour = 'black'; //should be distinct from choro
 
 let geoData;
 let na_data;
@@ -37,6 +37,7 @@ let cont_select = ALL;
 
 const INCREASE = 0;
 const ABSO = 1;
+const ABSB = 3;
 const TOP5 = 2;
 let choromode = INCREASE;
 
@@ -86,9 +87,6 @@ Returns what colour a data point should be
     data: datapoint object
 */
 function processColour(data){
-    if(selected_country != null && data.properties.name == selected_country.getAttribute('name')){
-        return selected_colour;
-    }
     let dataset;
     if(data.properties.continent == "North America"){
         dataset = na_data;
@@ -110,6 +108,9 @@ function processColour(data){
             //I wrote 'cases...' alot, -> constant please TODO
             return absScale(obj['Cases in the last 7 days'])
             break;
+        case ABSB:
+            return absScale(obj['Cases in the preceding 7 days'])
+            break;
         case TOP5:
             break;
         default:
@@ -124,12 +125,10 @@ Draws our visualization
     cont_mode: integer representation of continents to display, see enums
 */
 let drawViz = (geo, stats, cont_mode) => {
-    sa_data.forEach(function(d) {
-        d['Cases in the last 7 days'] = +d['Cases in the last 7 days'] ;
-    });
-    na_data.forEach(function(d) {
-        d['Cases in the last 7 days'] = +d['Cases in the last 7 days'] ;
-    });
+    
+    //selected_country = null;//sadly need this
+    //drawCountryInfo() //this too
+
     d3.select('#chorog').remove()
     d3.select('#absg').remove()
     const chorog = g.append('g')
@@ -147,7 +146,12 @@ let drawViz = (geo, stats, cont_mode) => {
         .attr('onclick', 'selectCountry(this)')
         .attr('class', 'country')
         .attr('d', path)
-        .attr('fill', d => processColour(d)) //set colour with choro
+        .attr('fill', d => {
+            if(selected_country != null && d.properties.name == selected_country.getAttribute('name')){
+                return selected_colour;
+            }
+            return processColour(d)
+        }) //set colour with choro
         .attr('prev_colour', d => processColour(d)) //store same colour here to restore it when unselected
 
     //Draw absoloute cases
@@ -300,22 +304,25 @@ Handles when a country is selected (clicked)
 */
 function selectCountry(element){
     if(element == null){return;}
-    if (selected_country != null){
-        selected_country.setAttribute('fill', selected_country.getAttribute('prev_colour'))
+    if (selected_country != null){ //lengthy switch for swapping modes with selection
+        d3.selectAll('path')
+            .each(function (d, i){
+                var path_name = d3.select(this).attr('name')
+                if(path_name == selected_country.getAttribute('name')){
+                    console.log(path_name)
+                    var curr_sel = d3.select(this)
+                    curr_sel.attr('fill', curr_sel.attr('prev_colour'))
+                }
+            })
     }
-
-    //FIX COLOUR SELECTION WHEN SWAPPING REGIONS
-
 
     element.setAttribute('fill', selected_colour)
     selected_country = element
-    drawCountryInfo()
+    drawCountryInfo() //call to update
 
     //todo: zoom on country select
     //https://observablehq.com/@d3/zoom-to-bounding-box //MID STAGE
     //button to refocus on selected country? LATE STAGE
-    //search bar to select country? LATE STAGE
-
 }
 
 /* removeSelection()
