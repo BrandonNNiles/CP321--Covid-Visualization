@@ -44,12 +44,10 @@ let choromode = INCREASE;
 let selected_country;
 
 //SCALES
-var incScale = d3.scaleQuantize()
-    .domain([0,60000])
-    .range(["#FF0D0D", "#FF4E11", "#FF8E15"]);
-var decScale = d3.scaleQuantize()
-    .domain([0,-5000])
-    .range(["#FAB733", "#ACB334", "#69B34C"]);
+var incScale = d3.scaleLinear()
+    .domain([-60000, -1000, 0, 200, 5000]) //again find better domain calcs
+    .range(["#90EF90", "#CDFFCC", "#FFFFFF", "#FFCCCB", "#FC6C85"]);
+
 var absScale = d3.scaleLinear()
     //.domain([0, Math.max(d3.max(sa_data, function(d) {return d[1]}), na_data)])
     .domain([0, 800000]) //find max domain with code!
@@ -102,10 +100,7 @@ function processColour(data){
     switch(choromode){
         case INCREASE:
             let diff = parseInt(obj['Cases in the last 7 days']) - parseInt(obj['Cases in the preceding 7 days'])
-            if(diff > 0){
-                return incScale(diff)
-            }
-            return decScale(diff);
+            return incScale(diff);
             break;
         case ABSO:
             //I wrote 'cases...' alot, -> constant please TODO
@@ -153,7 +148,6 @@ let drawViz = (geo, stats, cont_mode) => {
         }
         return 0
     })
-    console.log(top)
     for(i = 0; i < 5; i++){
         bottomcountries[i] = top[top.length - i - 1][0]
         topcountries[i] = top[i][0]
