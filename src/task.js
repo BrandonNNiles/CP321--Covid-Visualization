@@ -5,7 +5,7 @@ const saDataPath = '/data/covid_south_america_weekly_trend.csv';
 const naDataPath = '/data/north_america_covid_weekly_trend.csv';
 const proj_scale = 200; //scale of projection
 const def_trans = [660, 600]; //default translation
-const zoom_range = [1, 42]; // range of zoom of map
+const zoom_range = [1, 48]; // range of zoom of map
 const country_header_label = "Selected country: ";
 
     //SVGs
@@ -45,7 +45,7 @@ let selected_country;
 
 //SCALES
 var incScale = d3.scaleLinear()
-    .domain([-60000, -1000, 0, 200, 5000]) //again find better domain calcs
+    .domain([-60000, -50, 0, 50, 5000]) //again find better domain calcs
     .range(["#90EF90", "#CDFFCC", "#FFFFFF", "#FFCCCB", "#FC6C85"]);
 
 var absScale = d3.scaleLinear()
@@ -155,6 +155,7 @@ let drawViz = (geo, stats, cont_mode) => {
 
     d3.select('#chorog').remove()
     d3.select('#absg').remove()
+    d3.select('#maptitle').remove()
     const chorog = g.append('g')
         .attr('id', 'chorog')
 
@@ -181,14 +182,20 @@ let drawViz = (geo, stats, cont_mode) => {
     //Draw absoloute cases
 
     let totalcases = 0 //count total cases
+    let total_term;
+    if(choromode == ABSB){
+        total_term = 'Cases in the preceding 7 days';
+    } else {
+        total_term = 'Cases in the last 7 days';
+    }
     if(cont_mode != NORTH_AMERICA){ // do SA
         sa_data.forEach(function(item, index){
-            totalcases += parseInt(item['Cases in the last 7 days'])
+            totalcases += parseInt(item[total_term])
         });
     }
     if(cont_mode != SOUTH_AMERICA){ // do NA
         na_data.forEach(function(item, index){
-            totalcases += parseInt(item['Cases in the last 7 days'])
+            totalcases += parseInt(item[total_term])
         });
     }
 
@@ -214,7 +221,38 @@ let drawViz = (geo, stats, cont_mode) => {
         .attr('width', SVGRect.width + (box_text_padding[0] * 2))
         .attr('height', box_font_size + (box_text_padding[1] * 2))
     ctx.insertBefore(ctx.getElementById('casebox'), textElm);
-    
+
+    //map legend /title
+    let myScale;
+    let maptitle
+
+    switch (choromode){
+        case(INCREASE):
+            myScale = incScale
+            maptitle = "Increases and Decreases in Cases"
+            break;
+        case(ABSO):
+            maptitle = "Absoloute Cases"
+            myScale = absScale
+            break;
+        case(ABSB):
+            maptitle = "Absoloute Cases (Previous week)"
+            myScale = absScale
+            break;
+        case(TOP5):
+            maptitle = "Top 5/Bottom 5 (cases per 1M people)"
+            myScale = incScale
+            break;
+    }
+    drawLegend2('#tasksvg', width * 0.93, height * 0.8, myScale, 'Legend', 'maplegend')
+    svg.append('text')
+        .text(maptitle)
+        .attr('text-align', 'center')
+        .attr('text-anchor', 'middle')
+        .attr('x', width / 2)
+        .attr('y', 35)
+        .attr('id', 'maptitle')
+        .attr('font-size', '1.2em')
 }
 
 function drawExampleWorld(){
@@ -366,3 +404,58 @@ var zoom = d3.zoom()
         g.select('g').attr('transform', e.transform);
 });
 svg.call(zoom);
+
+function drawLegend2(canvas, posx, posy, scale, legendTitle, id){
+    d3.select("." + id).remove()
+    var legend  = d3.select(canvas).append('g').attr('class', id);
+    let legendCircleR = 5;
+    let legendEntrySpacing = 20;
+
+    legend.append('rect')
+        .attr('y', - 17)
+        .attr('x', -30)
+        .attr('width', 65)
+        .attr('height', 130) //we could dynamically resize but time constraints
+        .attr('fill', 'white')
+        .attr('stroke', 'black')
+    
+    legend.append('text') //Legend title
+    .attr("text-anchor", "middle")
+    .attr('text-align', 'center')
+    .style('padding', "-20 -20 -20 -20")
+    .style('font-size', '1em')
+    .attr('x', 0)
+    .attr('y', 0)
+    .text(legendTitle);
+
+    console.log(scale.domain())
+    scale.domain().forEach(function (value, index){
+        addEntry(scale(value), 1, value, index + 1, 0)
+    })
+
+
+    function addEntry(color, opacity, value, num, offset){
+        var box = legend.append('g');
+        box.append("circle")
+            .attr("r", legendCircleR)
+            .attr("cx", -1.5 * legendCircleR)
+            .attr("cy", -legendCircleR / 2 - 1)
+            .style("fill", color)
+            .attr("opacity", opacity)
+            .style("stroke", "black");
+
+        box.append("text")
+            .attr("text-anchor", "left")
+            .attr('text-align', 'left')
+            .style('padding', "-20 -20 -20 -20")
+            .style('font-size', '0.7em')
+            .attr('x', 0)
+            .attr('y', 0)
+            .text(value);
+
+        box.attr("transform", "translate("+ parseInt(-10 + offset) + ', ' + legendEntrySpacing * num +")");
+
+    }
+
+    legend.attr("transform", "translate("+posx + ','+posy+")");
+}
