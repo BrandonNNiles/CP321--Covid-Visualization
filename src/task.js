@@ -42,6 +42,14 @@ let choromode = INCREASE;
 
 let selected_country;
 
+//SCALES
+var incScale = d3.scaleQuantize()
+    .domain([0,60000])
+    .range(["#FF0D0D", "#FF4E11", "#FF8E15"]);
+var decScale = d3.scaleQuantize()
+    .domain([0,-5000])
+    .range(["#FAB733", "#ACB334", "#69B34C"]);
+
 const globalsvg = d3.select('#TaskMain').append('svg')
     .attr('class', 'tripsvg')
     .attr('width', width)
@@ -65,6 +73,42 @@ const proj = d3.geoMercator()
                 .scale(proj_scale)
                 .translate(def_trans);
 const path = d3.geoPath(proj);
+
+/* processColour(data)
+Returns what colour a data point should be
+    data: datapoint object
+*/
+function processColour(data){
+    if(selected_country != null && data.properties.name == selected_country.getAttribute('name')){
+        return selected_colour;
+    }
+    let dataset;
+    if(data.properties.continent == "North America"){
+        dataset = na_data;
+    } else if (data.properties.continent == "South America"){
+        dataset = sa_data;
+    } else {
+        return 'black' //in the case the country doesn't actually exist in data
+    }
+    switch(choromode){
+        case INCREASE:
+            let obj = dataset.find(d => d['Country/Other'] === data.properties.name)
+            let diff = parseInt(obj['Cases in the preceding 7 days']) - parseInt(obj['Cases in the last 7 days'])
+            //console.log(data.properties.name)
+            //console.log(diff)
+            if(diff > 0){
+                return incScale(diff)
+            }
+            return decScale(diff);
+            break;
+        case ABSO:
+            break;
+        case TOP5:
+            break;
+        default:
+            return 'white' //this should never happen
+    }
+}
 
 /*drawViz(geo, stats, cont_mode)
 Draws our visualization
@@ -90,12 +134,7 @@ let drawViz = (geo, stats, cont_mode) => {
         .attr('onclick', 'selectCountry(this)')
         .attr('class', 'country')
         .attr('d', path)
-        .attr('fill', d => {
-            if(selected_country != null && d.properties.name == selected_country.getAttribute('name')){
-                return selected_colour;
-            }
-            return 'purple'
-        }) //set colour with choro
+        .attr('fill', d => processColour(d)) //set colour with choro
         .attr('prev_colour', 'purple') //store same colour here to restore it when unselected
 
     //Draw absoloute cases
@@ -236,7 +275,10 @@ function processClick(element){
     //to do: zoom when mode is changed //MID STAGE
     if(element.getAttribute('name') == 'cont_select'){
         cont_select = element.value
+    } else if(element.getAttribute('name') == 'choro_select'){
+        choromode = parseInt(element.value);
     }
+    console.log(choromode)
     drawViz(geoData, {na_data, sa_data}, cont_select)
 }
 
@@ -249,6 +291,9 @@ function selectCountry(element){
     if (selected_country != null){
         selected_country.setAttribute('fill', selected_country.getAttribute('prev_colour'))
     }
+
+    //FIX COLOUR SELECTION WHEN SWAPPING REGIONS
+
 
     element.setAttribute('fill', selected_colour)
     selected_country = element
