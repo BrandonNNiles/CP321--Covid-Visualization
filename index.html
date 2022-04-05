@@ -13,9 +13,21 @@
     <div class = "task" class = 'gridcontainer'>
         <h1>Covid-19 Visualized</h1>
         <div id = "TaskMain" class = 'gridcontainerb'>
-            <div class = 'svgheader'>World Data</div>
+            <div class = 'svgheader'>Task Info</div>
             <div class = 'svgheader'>World Map</div>
             <div class = 'svgheader'>Country Data</div>
+            <div class = 'griditem'>
+                <h2>Task Explanation</h2>
+                <p>1. Use the '<b>Select Region:</b>' radio buttons to change which continents are visible.<br>
+                    Pan and zoom is available on the World Map for easier viewing.<br>
+                    Use the '<b>Choropleth Display:</b>' radio buttons to change the data displayed on the map.<br>
+                    2. Absoloute cases are shown with a single stacked barchart with a) and b) on x axis.<br>
+                    Additionally shown as a text element: "Total cases: ___"<br>
+                    3. Countries where increased/decreased shown as choropleth.<br>
+                    4. Top 5 / bottom 5 countries with lowest cases per million shown as 2 pie charts.<br>
+                    5. Click on a country to select it to show all of the data for that country.
+                </p>
+            </div>
         </div>
         <div class = 'gridcontainer'>
             <div id = 'radios' class = griditem>
@@ -30,18 +42,6 @@
                     South America<input type="radio" name="cont_select" value="1" id="radio_sa" class ="cont_radio" onclick="processClick(this)">
                 </div>
                 <div class = 'radiodiv' id = 'deselect_button'><button onclick = 'removeSelection()'>Deselect Country</button></div>
-            </div>
-            <div class = 'griditem'>
-                <h2>Task Explanation</h2>
-                <p>1. Use the '<b>Select Region:</b>' radio buttons to change which continents are visible.<br>
-                    Pan and zoom is available on the World Map for easier viewing.<br>
-                    Use the '<b>Choropleth Display:</b>' radio buttons to change the data displayed on the map.<br>
-                    2. Absoloute cases are shown with a single stacked barchart with a) and b) on x axis.<br>
-                    Additionally shown as a text element: "Total cases: ___"<br>
-                    3. Countries where increased/decreased shown as choropleth.<br>
-                    4. Top 5 / bottom 5 countries with lowest cases per million shown as 2 pie charts.<br>
-                    5. Click on a country to select it to show all of the data for that country.
-                </p>
             </div>
             <div class = 'griditem'>
                 <div class = 'radiotip'> Choropleth Display:</div>

@@ -58,13 +58,14 @@ var absScale = d3.scaleLinear()
 
 let topcountries = new Array();
 let bottomcountries = new Array()
-
+/*
 const globalsvg = d3.select('#TaskMain').append('svg')
     .attr('class', 'tripsvg')
     .attr('width', width)
     .attr('height', height)
     .attr('id', 'globalsvg');
 
+    */
 const svg = d3.select('#TaskMain').append('svg')
     .attr('class', 'tripsvg')
     .attr('width', width)
@@ -276,52 +277,52 @@ let drawViz = (geo, stats, cont_mode) => {
     atx.insertBefore(atx.getElementById('titlebox'), textElme);
 }
 
-function drawExampleWorld(){
+// function drawExampleWorld(){
 
-    const bar_dims = [300, 300]
-    const pie_dims = [300, 300]
+//     const bar_dims = [300, 300]
+//     const pie_dims = [300, 300]
 
-    const bars = globalsvg.append('g')
-    bars.append('rect')
-        .attr('width', bar_dims[0])
-        .attr('height', bar_dims[1])
-        .attr('x', (width / 2) - (bar_dims[0] / 2))
-        .attr('y', (height / 4) - (bar_dims[1] / 2))
-        .attr('fill', 'black')
-        .attr('id', 'barchart')
+//     const bars = globalsvg.append('g')
+//     bars.append('rect')
+//         .attr('width', bar_dims[0])
+//         .attr('height', bar_dims[1])
+//         .attr('x', (width / 2) - (bar_dims[0] / 2))
+//         .attr('y', (height / 4) - (bar_dims[1] / 2))
+//         .attr('fill', 'black')
+//         .attr('id', 'barchart')
 
-    const pie_top = globalsvg.append('g')
-    pie_top.append('rect')
-        .attr('width', pie_dims[0])
-        .attr('height', pie_dims[1])
-        .attr('x', (width / 3.5) - (pie_dims[0] / 2))
-        .attr('y', (height / 1.35) - (pie_dims[1] / 2))
-        .attr('fill', 'black')
-        .attr('id', 'pietop')
-    const pie_bottom = globalsvg.append('g')
-    pie_bottom.append('rect')
-        .attr('width', pie_dims[0])
-        .attr('height', pie_dims[1])
-        .attr('x', (width / 1.4) - (pie_dims[0] / 2))
-        .attr('y', (height / 1.35) - (pie_dims[1] / 2))
-        .attr('fill', 'black')
-        .attr('id', 'piebottom')
+//     const pie_top = globalsvg.append('g')
+//     pie_top.append('rect')
+//         .attr('width', pie_dims[0])
+//         .attr('height', pie_dims[1])
+//         .attr('x', (width / 3.5) - (pie_dims[0] / 2))
+//         .attr('y', (height / 1.35) - (pie_dims[1] / 2))
+//         .attr('fill', 'black')
+//         .attr('id', 'pietop')
+//     const pie_bottom = globalsvg.append('g')
+//     pie_bottom.append('rect')
+//         .attr('width', pie_dims[0])
+//         .attr('height', pie_dims[1])
+//         .attr('x', (width / 1.4) - (pie_dims[0] / 2))
+//         .attr('y', (height / 1.35) - (pie_dims[1] / 2))
+//         .attr('fill', 'black')
+//         .attr('id', 'piebottom')
     
-    const heading1 = globalsvg.append('text')
-        .text("Absoloute Cases")
-        .attr('x', width / 2)
-        .attr('y', 50)
-        .attr("text-anchor", "middle")
-        .attr('text-align', 'center')
-    const heading2 = globalsvg.append('text')
-        .text("Top 5 and Bottom 5 Countries")
-        .attr('x', width / 2)
-        .attr('y', 450)
-        .attr("text-anchor", "middle")
-        .attr('text-align', 'center')
+//     const heading1 = globalsvg.append('text')
+//         .text("Absoloute Cases")
+//         .attr('x', width / 2)
+//         .attr('y', 50)
+//         .attr("text-anchor", "middle")
+//         .attr('text-align', 'center')
+//     const heading2 = globalsvg.append('text')
+//         .text("Top 5 and Bottom 5 Countries")
+//         .attr('x', width / 2)
+//         .attr('y', 450)
+//         .attr("text-anchor", "middle")
+//         .attr('text-align', 'center')
 
-}
-drawExampleWorld()
+// }
+// drawExampleWorld()
 
 /*drawCountryInfo()
 Draws specialized visulization and data for a selected country.
@@ -357,7 +358,7 @@ function drawCountryInfo(){
         dataset = sa_data;
     }
     let obj = dataset.find(d => d['Country/Other'] === selected_country.getAttribute('name')) //geojson -> csv find
-    drawBarChart('Cases and Deaths', 'country_g', 'meme', '# of people', 350, 350, obj )
+    drawBarChart('Cases and Deaths', 'country_g', 'Statistic', '# of people', 350, 350, obj )
     //cases vs deaths /1m
 }
 drawCountryInfo()
@@ -595,14 +596,12 @@ function drawLegendTop(canvas, posx, posy, scale, legendTitle, id){ //slightly m
 }
 
 function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj ){
-    console.log(obj)
     //Configurables
     const border = {left: 60, right: 20, bottom: 60, top: 50}; //Padding
     const labels = ['Cases in the preceding 7 days', 'Cases in the last 7 days',
         'Deaths in the preceding 7 days', 'Deaths in the last 7 days']
     const xAxisData1 = [obj[labels[0]], obj[labels[1]], obj[labels[2]], obj[labels[3]]]; //Data on the x axis
     const yAxisData1 = ['Cases', 'Deaths']; //Data on the y axis
-    console.log(xAxisData1)
     //Create 500x500 svg element
     const barchart = d3.select("#" + canvas)
         .append("svg")
@@ -626,7 +625,7 @@ function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj 
 
 
     //Axis
-    const xTick = number => d3.format('.1s')(number).replace('G', 'B');
+    const xTick = number => d3.format('.2s')(number).replace('G', 'B');
     const xAxis = d3.axisBottom(xScale).tickFormat(xTick).tickSize(-usableHeight);
 
     g.append('g').call(d3.axisLeft(yScale));
@@ -635,6 +634,7 @@ function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj 
 
     var i = 0;
     let new_h = yScale.bandwidth() / 4
+    let perc_label = "% from previous week"
     
     g.append('rect')
         .attr('y', 60 - new_h)
@@ -646,6 +646,12 @@ function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj 
         .attr('height', new_h)
         .attr('width', xScale(xAxisData1[1]))
         .attr('class', 'current')
+    g.append('text')
+        .attr('y', 60)
+        .attr('height', new_h)
+        .attr('width', xScale(xAxisData1[1]))
+        .attr('class', 'percent')
+        .text(obj['Weekly Case % Change'] + perc_label)
     g.append('rect')
         .attr('y', 180 - new_h)
         .attr('height', new_h)
@@ -656,6 +662,12 @@ function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj 
         .attr('height', new_h)
         .attr('width', xScale(xAxisData1[3]))
         .attr('class', 'current')
+    g.append('text')
+        .attr('y', 180)
+        .attr('height', new_h)
+        .attr('width', xScale(xAxisData1[1]))
+        .attr('class', 'percent')
+        .text(obj['Weekly Death % Change'] + perc_label)
     
     
     barchart.append('text')
@@ -663,10 +675,11 @@ function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj 
         .attr('y', 30)
         .attr('x', 28)
         .text(title);    
-    xAxisG.append('text')
+    g.append('text')
         .attr('class', 'axis-label')
-        .attr('y', border.bottom / 1.4)
+        .attr('y', usableHeight + 30)
         .attr('x', usableWidth / 2)
+        .attr("text-anchor", "middle")
         .text(xAxisLabel);
     barchart.append("text")
         .attr("class", "axis-label")
