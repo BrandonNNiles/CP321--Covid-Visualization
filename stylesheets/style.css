@@ -96,6 +96,8 @@ svg{
 
 #deselect_button{
     border: none;
+    margin: auto;
+    height: 90%;
 }
 
 .last{

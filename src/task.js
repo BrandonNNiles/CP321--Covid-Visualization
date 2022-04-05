@@ -668,6 +668,28 @@ function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj 
         .attr('width', xScale(xAxisData1[1]))
         .attr('class', 'percent')
         .text(obj['Weekly Death % Change'] + perc_label)
+
+    g.append('circle')
+        .attr('cx', 300)
+        .attr('cy', 100)
+        .attr('r', 5)
+        .attr('fill', 'red')
+    g.append('text')
+        .attr('x', 310)
+        .attr('y', 105)
+        .text("Previous Week")
+        .attr('text-align', 'center')
+
+     g.append('circle')
+        .attr('cx', 300)
+        .attr('cy', 125)
+        .attr('r', 5)
+        .attr('fill', 'green')
+    g.append('text')
+        .attr('x', 310)
+        .attr('y', 130)
+        .text("Last Week")
+        .attr('text-align', 'center')
     
     
     barchart.append('text')
