@@ -345,6 +345,7 @@ function drawCountryInfo(){
         .attr('id', 'country_header')
         .attr('x', 10)
         .attr('y', 50)
+        .attr('font-size', '2em')
     
     if(selected_country == null){return;} //We don't want to draw anything after label
 
@@ -359,6 +360,8 @@ function drawCountryInfo(){
     }
     let obj = dataset.find(d => d['Country/Other'] === selected_country.getAttribute('name')) //geojson -> csv find
     drawBarChart('Cases and Deaths', 'country_g', 'Statistic', '# of people', 350, 350, obj )
+    drawBarChart2('Cases and Deaths per 1M People', 'country_g', 'Statistic', '# /1M People', 350, 350, obj )
+
     //cases vs deaths /1m
 }
 drawCountryInfo()
@@ -610,7 +613,7 @@ function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj 
         .style('width', String(width))
         .style('height', String(height))
         .attr('x', 50)
-        .attr('y', 50)
+        .attr('y', 100)
 
     const usableWidth = width - (border.left + border.right);
     const usableHeight = height - (border.top + border.bottom);
@@ -692,6 +695,75 @@ function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj 
         .attr('text-align', 'center')
     
     
+    barchart.append('text')
+        .attr('class', 'title')
+        .attr('y', 30)
+        .attr('x', 28)
+        .text(title);    
+    g.append('text')
+        .attr('class', 'axis-label')
+        .attr('y', usableHeight + 30)
+        .attr('x', usableWidth / 2)
+        .attr("text-anchor", "middle")
+        .text(xAxisLabel);
+    barchart.append("text")
+        .attr("class", "axis-label")
+        .attr("text-anchor", "middle")
+        .attr("y", 30)
+        .attr("x", -usableHeight / 2 - 35)
+        .attr("transform", "rotate(-90)")
+        .text(yAxisLabel);
+}
+
+function drawBarChart2(title, canvas, yAxisLabel, xAxisLabel, width, height, obj ){
+    //Configurables
+    const border = {left: 60, right: 20, bottom: 60, top: 50}; //Padding
+    const labels = ['Cases in the last 7 days/1M pop', 'Deaths in the last 7 days/1M pop']
+    const xAxisData1 = [obj[labels[0]], obj[labels[1]], obj[labels[2]], obj[labels[3]]]; //Data on the x axis
+    const yAxisData1 = ['Cases', 'Deaths']; //Data on the y axis
+    //Create 500x500 svg element
+    const barchart = d3.select("#" + canvas)
+        .append("svg")
+        .classed('barchart', true)
+        .style('border', '4px solid black')
+        .style('width', String(width))
+        .style('height', String(height))
+        .attr('x', 50)
+        .attr('y', 450)
+
+    const usableWidth = width - (border.left + border.right);
+    const usableHeight = height - (border.top + border.bottom);
+
+    const g = barchart.append('g')
+    .attr('transform', `translate(${border.left},${border.top})`); //Padding
+
+
+    const xScale = d3.scaleLinear().domain([0, Math.max(parseInt(obj[labels[0]]) * 1.1, parseInt(obj[labels[1]]) * 1.1)]).range([0, usableWidth]); //scale calc
+    const yScale = d3.scaleBand().domain(yAxisData1).range([0, usableHeight])
+       // .padding(0.15);
+
+
+    //Axis
+    const xTick = number => d3.format('.2s')(number).replace('G', 'B');
+    const xAxis = d3.axisBottom(xScale).tickFormat(xTick).tickSize(-usableHeight);
+
+    g.append('g').call(d3.axisLeft(yScale));
+    const xAxisG = g.append('g').call(xAxis)
+    .attr('transform', `translate(0,${usableHeight})`);
+
+    let new_h = yScale.bandwidth() / 3
+    
+    g.append('rect')
+        .attr('y', new_h)
+        .attr('height', new_h)
+        .attr('width', xScale(xAxisData1[0]))
+        .attr('class', 'bar')
+    g.append('rect')
+        .attr('y', 160)
+        .attr('height', new_h)
+        .attr('width', xScale(xAxisData1[1]))
+        .attr('class', 'bar')
+
     barchart.append('text')
         .attr('class', 'title')
         .attr('y', 30)

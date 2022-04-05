@@ -107,3 +107,7 @@ svg{
 .current{
     fill: green;
 }
+
+.bar{
+    fill: orchid;
+}
