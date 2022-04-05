@@ -97,3 +97,11 @@ svg{
 #deselect_button{
     border: none;
 }
+
+.last{
+    fill: red;
+}
+
+.current{
+    fill: green;
+}

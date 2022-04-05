@@ -168,6 +168,7 @@ let drawViz = (geo, stats, cont_mode) => {
             return d;
         })
         .attr('name', d => d.properties.name)
+        .attr('continent', d => d.properties.continent)
         .attr('onclick', 'selectCountry(this)')
         .attr('class', 'country')
         .attr('d', path)
@@ -344,11 +345,19 @@ function drawCountryInfo(){
         .attr('x', 10)
         .attr('y', 50)
     
-    if(selected_country != null){return;} //We don't want to draw anything after label
+    if(selected_country == null){return;} //We don't want to draw anything after label
 
     //Draw barchart
     //cases (%change) deaths (%change)
-    drawBarChart('Cases and Deaths', 'country_g', '', '# of people', 300, 300, obj )
+    let dataset;
+    continent = selected_country.getAttribute('continent')
+    if(continent == "North America"){
+        dataset = na_data;
+    } else if (continent == "South America"){
+        dataset = sa_data;
+    }
+    let obj = dataset.find(d => d['Country/Other'] === selected_country.getAttribute('name')) //geojson -> csv find
+    drawBarChart('Cases and Deaths', 'country_g', 'meme', '# of people', 350, 350, obj )
     //cases vs deaths /1m
 }
 drawCountryInfo()
@@ -585,20 +594,24 @@ function drawLegendTop(canvas, posx, posy, scale, legendTitle, id){ //slightly m
     legend.attr("transform", "translate("+posx + ','+posy+")");
 }
 
-function drawBarChart(title, canvas, xAxisLabel, yAxisLabel, width, height, obj ){
-
+function drawBarChart(title, canvas, yAxisLabel, xAxisLabel, width, height, obj ){
+    console.log(obj)
     //Configurables
     const border = {left: 60, right: 20, bottom: 60, top: 50}; //Padding
-    const xAxisData = d => d.marks; //Data on the x axis
-    const yAxisData = d => d.Student; //Data on the y axis
-
+    const labels = ['Cases in the preceding 7 days', 'Cases in the last 7 days',
+        'Deaths in the preceding 7 days', 'Deaths in the last 7 days']
+    const xAxisData1 = [obj[labels[0]], obj[labels[1]], obj[labels[2]], obj[labels[3]]]; //Data on the x axis
+    const yAxisData1 = ['Cases', 'Deaths']; //Data on the y axis
+    console.log(xAxisData1)
     //Create 500x500 svg element
     const barchart = d3.select("#" + canvas)
         .append("svg")
         .classed('barchart', true)
         .style('border', '4px solid black')
         .style('width', String(width))
-        .style('height', String(height));
+        .style('height', String(height))
+        .attr('x', 50)
+        .attr('y', 50)
 
     const usableWidth = width - (border.left + border.right);
     const usableHeight = height - (border.top + border.bottom);
@@ -607,9 +620,10 @@ function drawBarChart(title, canvas, xAxisLabel, yAxisLabel, width, height, obj 
     .attr('transform', `translate(${border.left},${border.top})`); //Padding
 
 
-    const xScale = d3.scaleLinear().domain([0, d3.max(data, xAxisData)]).range([0, usableWidth]); //scale calc
-    const yScale = d3.scaleBand().domain(data.map(yAxisData)).range([0, usableHeight])
-        .padding(0.15);
+    const xScale = d3.scaleLinear().domain([0, Math.max(parseInt(obj[labels[0]]) * 1.1, parseInt(obj[labels[1]]) * 1.1)]).range([0, usableWidth]); //scale calc
+    const yScale = d3.scaleBand().domain(yAxisData1).range([0, usableHeight])
+       // .padding(0.15);
+
 
     //Axis
     const xTick = number => d3.format('.1s')(number).replace('G', 'B');
@@ -620,13 +634,29 @@ function drawBarChart(title, canvas, xAxisLabel, yAxisLabel, width, height, obj 
     .attr('transform', `translate(0,${usableHeight})`);
 
     var i = 0;
-    g.selectAll('rect').data(data) //Draw bars
-        .enter().append('rect')
-        .attr("id", id => i += 1)
-        .attr('y', d => yScale(yAxisData(d)))
-        .attr('height', yScale.bandwidth())
-        .attr('width', d => xScale(xAxisData(d)))
-        .attr('opacity', 1);
+    let new_h = yScale.bandwidth() / 4
+    
+    g.append('rect')
+        .attr('y', 60 - new_h)
+        .attr('height', new_h)
+        .attr('width', xScale(xAxisData1[0]))
+        .attr('class', 'last')
+    g.append('rect')
+        .attr('y', 60)
+        .attr('height', new_h)
+        .attr('width', xScale(xAxisData1[1]))
+        .attr('class', 'current')
+    g.append('rect')
+        .attr('y', 180 - new_h)
+        .attr('height', new_h)
+        .attr('width', xScale(xAxisData1[2]))
+        .attr('class', 'last')
+    g.append('rect')
+        .attr('y', 180)
+        .attr('height', new_h)
+        .attr('width', xScale(xAxisData1[3]))
+        .attr('class', 'current')
+    
     
     barchart.append('text')
         .attr('class', 'title')
